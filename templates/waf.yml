@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: WAF Web ACL related to CloudFront Distribution
+
+Parameters:
+  AppName:
+    Type: String
+
+Resources:
+  MyWebACL:
+    Type: AWS::WAFv2::WebACL
+    Properties:
+      Name: !Sub ${AppName}WebACL
+      DefaultAction:
+        Allow: {}
+      Scope: CLOUDFRONT
+      VisibilityConfig:
+        SampledRequestsEnabled: true
+        CloudWatchMetricsEnabled: true
+        MetricName: !Sub ${AppName}WebACL
+      # Rules:
+      #   - Name: AWSManagedRulesCommonRuleSet
+      #     Priority: 0
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesCommonRuleSetMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesCommonRuleSet
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesKnownBadInputsRuleSet
+      #     Priority: 1
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesKnownBadInputsRuleSetMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesKnownBadInputsRuleSet
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesAmazonIpReputationList
+      #     Priority: 2
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesAmazonIpReputationListMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesAmazonIpReputationList
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesAnonymousIpList
+      #     Priority: 3
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesAnonymousIpListMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesAnonymousIpList
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesSQLiRuleSet
+      #     Priority: 4
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesSQLiRuleSetMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesSQLiRuleSet
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesLinuxRuleSet
+      #     Priority: 5
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesLinuxRuleSetMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesLinuxRuleSet
+      #         ExcludedRules: []
+      #   - Name: AWSManagedRulesUnixRuleSet
+      #     Priority: 6
+      #     OverrideAction:
+      #       Count: {}
+      #     VisibilityConfig:
+      #       SampledRequestsEnabled: true
+      #       CloudWatchMetricsEnabled: true
+      #       MetricName: AWSManagedRulesUnixRuleSetMetric
+      #     Statement:
+      #       ManagedRuleGroupStatement:
+      #         VendorName: AWS
+      #         Name: AWSManagedRulesUnixRuleSet
+
+Outputs:
+  MyWebACL:
+    Value: !Ref MyWebACL
+    Export:
+      Name: MyWebACL

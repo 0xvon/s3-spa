@@ -1,0 +1,31 @@
+#!bin/sh
+
+. ./.env
+
+RECORD_NAME=${DOMAIN_NAME}
+ENV=$1
+if [ ${ENV} != "prd" ]; then
+    RECORD_NAME=${ENV}.${RECORD_NAME}
+    APP_NAME=${ENV}-${APP_NAME}
+fi
+
+# upload templates to S3 Bucket
+aws s3 rm s3://camel-templates/${APP_NAME} --recursive
+aws s3 sync templates/ s3://camel-templates/${APP_NAME}/templates
+
+# deploy
+aws cloudformation deploy \
+    --template-file root.yml \
+    --stack-name ${APP_NAME}-root-stack \
+    --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM \
+    --parameter-overrides \
+        AppName=${APP_NAME} \
+        DomainName=${DOMAIN_NAME} \
+        RecordName=${RECORD_NAME} \
+        CFSSLCertificateId=${CFSSLCertificateId}
+
+# upload sample index.html to S3 Bucket
+aws s3 sync . s3://${APP_NAME}/ \
+    --include "sample/*" \
+    --acl public-read \
+    --cache-control "max-age=3600"

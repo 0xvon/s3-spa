@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  a Root Stack
+
+Parameters:
+  AppName:
+    Type: String
+
+  DomainName:
+    Type: String
+
+  RecordName:
+    Type: String
+
+  CFSSLCertificateId:
+    Type: String
+
+Resources:
+  S3:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://camel-templates.s3-ap-northeast-1.amazonaws.com/${AppName}/templates/s3.yml
+      Parameters:
+        BucketName: !Ref AppName
+
+  # WAF:
+  #   Type: AWS::CloudFormation::Stack
+  #   Properties:
+  #     TemplateURL: !Sub https://camel-templates.s3-ap-northeast-1.amazonaws.com/${AppName}/templates/waf.yml
+  #     Parameters:
+  #       AppName: !Ref AppName
+        
+  CloudFront:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://camel-templates.s3-ap-northeast-1.amazonaws.com/${AppName}/templates/cloudfront.yml
+      Parameters:
+        BucketName: !Ref AppName
+        DomainName: !Ref RecordName
+        CFSSLCertificateId: !Ref CFSSLCertificateId
+        BucketDomainName: !GetAtt S3.Outputs.BucketDomainName
+        CloudFrontOriginAccessIdentity: !GetAtt S3.Outputs.CloudFrontOriginAccessIdentity
+        # MyWebACL: !GetAtt WAF.Outputs.MyWebACL
+
+  Route53:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://camel-templates.s3-ap-northeast-1.amazonaws.com/${AppName}/templates/route53.yml
+      Parameters:
+        DomainName: !Sub ${DomainName}.
+        RecordName: !Sub ${RecordName}.
+        TTLNormal: "3600"
+        CloudFrontDomainName: !GetAtt CloudFront.Outputs.DomainName
